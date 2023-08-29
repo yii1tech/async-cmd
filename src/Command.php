@@ -13,6 +13,10 @@ use CComponent;
 class Command extends CComponent
 {
     /**
+     * @var bool whether this command has been already dispatched.
+     */
+    public $isDispatched = false;
+    /**
      * @var string|null class name of the Yii console command to be executed.
      */
     private $_commandClass;
@@ -33,7 +37,7 @@ class Command extends CComponent
      */
     private $_outputLog;
     /**
-     * @var \yii1tech\async\cmd\Dispatcher related dispatcher.
+     * @var \yii1tech\async\cmd\CommandDispatcher related dispatcher.
      */
     private $_dispatcher;
     /**
@@ -107,7 +111,19 @@ class Command extends CComponent
     }
 
     /**
-     * @param array<int|string, mixed> $params list of arguments, which should be applied to the console command.
+     * Sets parameters for the console command execution.
+     * For example:
+     *
+     * ```
+     * [
+     *     'interactive' => '0',
+     *     'foo' => 'bar',
+     * ]
+     * ```
+     *
+     * Parameter values will be automatically sanitized.
+     *
+     * @param array<int|string, mixed> $params list of parameters, which should be applied to the console command.
      * @return static self reference.
      */
     public function setParams(array $params): self
@@ -118,7 +134,7 @@ class Command extends CComponent
     }
 
     /**
-     * @return string|null
+     * @return string|null file or stream, to which the command output should be redirected.
      */
     public function getOutputLog(): ?string
     {
@@ -126,7 +142,7 @@ class Command extends CComponent
     }
 
     /**
-     * @param string|null $outputLog
+     * @param string $outputLog file or stream, to which the command output should be redirected.
      * @return static self reference.
      */
     public function setOutputLog(string $outputLog): self
@@ -137,18 +153,18 @@ class Command extends CComponent
     }
 
     /**
-     * @return \yii1tech\async\cmd\Dispatcher related dispatcher.
+     * @return \yii1tech\async\cmd\CommandDispatcher related dispatcher.
      */
-    public function getDispatcher(): Dispatcher
+    public function getDispatcher(): CommandDispatcher
     {
         return $this->_dispatcher;
     }
 
     /**
-     * @param \yii1tech\async\cmd\Dispatcher $dispatcher dispatcher, which should be used to execute this command.
+     * @param \yii1tech\async\cmd\CommandDispatcher $dispatcher dispatcher, which should be used to execute this command.
      * @return static self reference.
      */
-    public function setDispatcher(Dispatcher $dispatcher): self
+    public function setDispatcher(CommandDispatcher $dispatcher): self
     {
         $this->_dispatcher = $dispatcher;
 
@@ -174,6 +190,14 @@ class Command extends CComponent
         return $this;
     }
 
+    /**
+     * Configures command to run Yii console application command.
+     *
+     * @param string $class console command class name.
+     * @param string|null $action console command action
+     * @param array $params list of parameters, which should be applied to the console command.
+     * @return static self reference.
+     */
     public function yiic(string $class, ?string $action = null, array $params = []): self
     {
         $this->setCommandClass($class);
@@ -185,9 +209,41 @@ class Command extends CComponent
         return $this;
     }
 
+    /**
+     * Configures command to run external utility in the system.
+     *
+     * @param string $binPath path to the console binary, which should be executed.
+     * @param array $params list of parameters, which should be applied to the console command.
+     * @return static self reference.
+     */
     public function external(string $binPath, array $params = []): self
     {
         return $this->setBinPath($binPath)
             ->setParams($params);
+    }
+
+    /**
+     * Dispatches this command for an asynchronous execution, without waiting for its result.
+     *
+     * @return static self reference.
+     */
+    public function dispatch(): self
+    {
+        $this->getDispatcher()->dispatch($this);
+
+        $this->isDispatched = true;
+
+        return $this;
+    }
+
+    /**
+     * Destructor.
+     * Automatically dispatches pending command, if {@see $autoDispatch} is enabled.
+     */
+    public function __destruct()
+    {
+        if ($this->getAutoDispatch() && !$this->isDispatched) {
+            $this->dispatch();
+        }
     }
 }
