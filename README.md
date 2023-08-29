@@ -39,3 +39,42 @@ Usage
 -----
 
 This extension provides asynchronous shell command runner for Yii1.
+
+Application configuration example:
+
+```php
+<?php
+
+return [
+    'components' => [
+        \yii1tech\async\cmd\CommandDispatcher::class => [
+            'class' => \yii1tech\async\cmd\CommandDispatcher::class,
+        ],
+        // ...
+    ],
+    // ...
+];
+```
+
+Usage example:
+
+```php
+<?php
+
+use yii1tech\async\cmd\CommandDispatcher;
+
+/** @var CommandDispatcher $dispatcher */
+$dispatcher = Yii::app()->getComponent(CommandDispatcher::class);
+
+// run Yii console command:
+$dispatcher->create()
+    ->yiic(StatsCommand::class, 'generate', ['date' => '2023-08-29']);
+
+// run arbitrary console command:
+$dispatcher->create()
+    ->external('curl', [
+        '-X' => 'POST',
+        '-d' => 'param1=value1&param2=value2',
+        'http://example.com/api/notify',
+    ]);
+```

@@ -9,6 +9,38 @@ use Yii;
 /**
  * CommandDispatcher manages console command execution in asynchronous way, without waiting for its result.
  *
+ * Application configuration example:
+ *
+ * ```php
+ * return [
+ *     'components' => [
+ *         \yii1tech\async\cmd\CommandDispatcher::class => [
+ *             'class' => \yii1tech\async\cmd\CommandDispatcher::class,
+ *         ],
+ *         // ...
+ *     ],
+ *     // ...
+ * ];
+ * ```
+ *
+ * Usage example:
+ *
+ * ```php
+ * $dispatcher = Yii::app()->getComponent(CommandDispatcher::class);
+ *
+ * // run Yii console command:
+ * $dispatcher->create()
+ *     ->yiic(StatsCommand::class, 'generate', ['date' => '2023-08-29']);
+ *
+ * // run arbitrary console command:
+ * $dispatcher->create()
+ *     ->external('curl', [
+ *         '-X' => 'POST',
+ *         '-d' => 'param1=value1&param2=value2',
+ *         'http://example.com/api/notify',
+ *     ]);
+ * ```
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
