@@ -1,0 +1,39 @@
+{
+    "name": "yii1tech/async-cmd",
+    "description": "Provides asynchronous shell command runner for Yii1",
+    "keywords": ["yii1", "async", "asynchronous", "cmd", "command", "shell"],
+    "license": "BSD-3-Clause",
+    "support": {
+        "issues": "https://github.com/yii1tech/async-cmd/issues",
+        "wiki": "https://github.com/yii1tech/async-cmd/wiki",
+        "source": "https://github.com/yii1tech/async-cmd"
+    },
+    "authors": [
+        {
+            "name": "Paul Klimov",
+            "email": "klimov.paul@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.2",
+        "yiisoft/yii": "~1.1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.0 || ^7.0 || ^8.0 || ^9.3 || ^10.0.7"
+    },
+    "autoload": {
+        "psr-4": {
+            "yii1tech\\async\\cmd\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "yii1tech\\async\\cmd\\test\\": "tests"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
