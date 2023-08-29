@@ -3,6 +3,7 @@
 namespace yii1tech\async\cmd\test;
 
 use CConsoleApplication;
+use CFileHelper;
 use CMap;
 use Yii;
 
@@ -16,6 +17,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $this->mockApplication();
+
+        CFileHelper::createDirectory(__DIR__ . '/runtime', 0777, true);
     }
 
     /**
@@ -24,6 +27,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
     protected function tearDown(): void
     {
         $this->destroyApplication();
+
+        CFileHelper::removeDirectory(__DIR__ . '/runtime');
     }
 
     /**

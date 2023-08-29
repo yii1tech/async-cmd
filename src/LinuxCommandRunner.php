@@ -28,35 +28,42 @@ class LinuxCommandRunner extends CApplicationComponent implements CommandRunnerC
      */
     public function run(Command $command): void
     {
-        $binPath = $command->getBinPath();
-        if (empty($binPath)) {
+        $cmd = $command->getBinPath();
+        if (empty($cmd)) {
             $commandClass = $command->getCommandClass();
             if (empty($commandClass)) {
                 throw new InvalidArgumentException('Command to be executed should be set with either "binPath" or "commandClass".');
             }
 
-            $binPath = $this->phpBinPath;
+            $cmd = $this->phpBinPath;
 
             $yiicPath = $this->yiicPath ?? (Yii::app()->getBasePath() . DIRECTORY_SEPARATOR . 'yiic');
 
-            $binPath .= ' ' . $yiicPath;
+            $cmd .= ' ' . $yiicPath;
+            $cmd .= ' ' . $this->extractConsoleCommandNameFromClass($commandClass);
+
+            $action = $command->getCommandAction();
+            if (!empty($action)) {
+                $cmd .= ' ' . $action;
+            }
         }
 
         $paramString = $this->composeParamsString($command);
         if (!empty($paramString)) {
-            $binPath .= ' ' . $paramString;
+            $cmd .= ' ' . $paramString;
         }
 
-        $binPath .= ' 2>&1';
+        $cmd .= ' 2>&1';
 
         $logPath = $command->getOutputLog();
         if (!empty($logPath)) {
-            $binPath .= ' >> ' . $logPath;
+            $cmd .= ' >> ' . $logPath;
         }
 
-        $binPath .= ' &';
+        $cmd .= ' &';
 
-        system($binPath);
+        $handle = popen($cmd, 'r');
+        pclose($handle);
     }
 
     /**
@@ -91,5 +98,24 @@ class LinuxCommandRunner extends CApplicationComponent implements CommandRunnerC
         }
 
         return implode(' ', $paramsParts);
+    }
+
+    /**
+     * @param string $consoleCommandClassName Yii console command class name.
+     * @return string command name in the Yiic shell.
+     */
+    protected function extractConsoleCommandNameFromClass(string $consoleCommandClassName): string
+    {
+        if (stripos($consoleCommandClassName, '\\') !== false) {
+            $consoleCommandClassName = basename(str_replace('\\', DIRECTORY_SEPARATOR, $consoleCommandClassName));
+        }
+
+        if (substr($consoleCommandClassName, -strlen('Command')) === 'Command') {
+            $name = substr($consoleCommandClassName, 0, -strlen('Command'));
+
+            return lcfirst($name);
+        }
+
+        return $consoleCommandClassName;
     }
 }
