@@ -59,7 +59,7 @@ class LinuxCommandRunner extends CApplicationComponent implements CommandRunnerC
 
             $yiicPath = $this->yiicPath ?? (Yii::app()->getBasePath() . DIRECTORY_SEPARATOR . 'yiic');
 
-            $cmd .= ' ' . $yiicPath;
+            $cmd .= ' ' . escapeshellarg($yiicPath);
             $cmd .= ' ' . $this->extractConsoleCommandNameFromClass($commandClass);
 
             $action = $command->getCommandAction();
@@ -77,7 +77,7 @@ class LinuxCommandRunner extends CApplicationComponent implements CommandRunnerC
 
         $logPath = $command->getOutputLog();
         if (!empty($logPath)) {
-            $cmd .= ' >> ' . $logPath;
+            $cmd .= ' >> ' . escapeshellarg($logPath);
         }
 
         $cmd .= ' &';
