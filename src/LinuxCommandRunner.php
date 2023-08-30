@@ -3,6 +3,7 @@
 namespace yii1tech\async\cmd;
 
 use CApplicationComponent;
+use CLogger;
 use InvalidArgumentException;
 use Yii;
 
@@ -80,6 +81,8 @@ class LinuxCommandRunner extends CApplicationComponent implements CommandRunnerC
         }
 
         $cmd .= ' &';
+
+        Yii::log($cmd, CLogger::LEVEL_INFO, 'yii1tech.async-cmd');
 
         $handle = popen($cmd, 'r');
         pclose($handle);
