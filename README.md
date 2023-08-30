@@ -174,7 +174,7 @@ class StatsGenerateLauncherTest extends TestCase
         $runner = $dispatcher->getCommandRunner();
         $command = $runner->getLastCommand();
         
-        // check if the async command has been dispatche with the correct parameters:
+        // check if the async command has been dispatched with the correct parameters:
         $this->assertTrue($command instanceof Command);
         $this->assertSame(StatsCommand::class, $command->getCommandClass());
         $this->assertSame('generate', $command->getCommandAction());
