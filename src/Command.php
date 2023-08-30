@@ -7,6 +7,16 @@ use CComponent;
 /**
  * Command represents particular shell command to be executed.
  *
+ * Do not instantiate this class on your own, use {@see \yii1tech\async\cmd\CommandDispatcher::create()} instead.
+ *
+ * @property string|null $commandClass class name of the Yii console command to be executed.
+ * @property string|null $commandAction name of the Yii console command action to be executed.
+ * @property string|null $binPath path to the console binary, which should be executed.
+ * @property array<int|string, mixed> $params list of shell arguments, which should be passed to the command.
+ * @property string|null $outputLog file or stream, to which the command output should be redirected.
+ * @property \yii1tech\async\cmd\CommandDispatcher $dispatcher the related dispatcher.
+ * @property bool $autoDispatch whether the command should be automatically dispatched, once it is out of program scope (e.g. on destruct).
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
@@ -29,7 +39,7 @@ class Command extends CComponent
      */
     private $_binPath;
     /**
-     * @var array list of shell arguments, which should be passed to the command.
+     * @var array<int|string, mixed> list of shell arguments, which should be passed to the command.
      */
     private $_params = [];
     /**
@@ -37,7 +47,7 @@ class Command extends CComponent
      */
     private $_outputLog;
     /**
-     * @var \yii1tech\async\cmd\CommandDispatcher related dispatcher.
+     * @var \yii1tech\async\cmd\CommandDispatcher the related dispatcher.
      */
     private $_dispatcher;
     /**
@@ -112,16 +122,30 @@ class Command extends CComponent
 
     /**
      * Sets parameters for the console command execution.
+     *
+     * Param values will be automatically sanitized using {@see escapeshellarg()}.
+     *
+     * For the external command parameter name should be specified in full, including possible prefixing '-' symbols.
+     * For example:
+     *
+     * ```
+     * [
+     *     '-X' => 'POST',
+     *     '-d' => 'param1=value1&param2=value2',
+     *     'http://example.com/api/notify',
+     * ]
+     * ```
+     *
+     * For the Yii console there is no need to add '-' symbols - it will be performed automatically.
      * For example:
      *
      * ```
      * [
      *     'interactive' => '0',
      *     'foo' => 'bar',
+     *     'unnamed-arg-value',
      * ]
      * ```
-     *
-     * Parameter values will be automatically sanitized.
      *
      * @param array<int|string, mixed> $params list of parameters, which should be applied to the console command.
      * @return static self reference.
@@ -193,6 +217,8 @@ class Command extends CComponent
     /**
      * Configures command to run Yii console application command.
      *
+     * @see setParams()
+     *
      * @param string $class console command class name.
      * @param string|null $action console command action
      * @param array $params list of parameters, which should be applied to the console command.
@@ -211,6 +237,8 @@ class Command extends CComponent
 
     /**
      * Configures command to run external utility in the system.
+     *
+     * @see setParams()
      *
      * @param string $binPath path to the console binary, which should be executed.
      * @param array $params list of parameters, which should be applied to the console command.

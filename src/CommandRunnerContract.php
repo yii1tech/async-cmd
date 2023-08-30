@@ -5,6 +5,8 @@ namespace yii1tech\async\cmd;
 /**
  * CommandRunnerContract represents entity which performs actual execution of command in asynchronous way.
  *
+ * @see \yii1tech\async\cmd\LinuxCommandRunner
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */

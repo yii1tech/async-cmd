@@ -41,6 +41,8 @@ use Yii;
  *     ]);
  * ```
  *
+ * @property \yii1tech\async\cmd\CommandRunnerContract|array $commandRunner command runner component or its array configuration.
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
@@ -58,7 +60,7 @@ class CommandDispatcher extends CApplicationComponent
     private $_commandRunner = [];
 
     /**
-     * @return \yii1tech\async\cmd\CommandRunnerContract
+     * @return \yii1tech\async\cmd\CommandRunnerContract command runner instance.
      */
     public function getCommandRunner(): CommandRunnerContract
     {
@@ -72,7 +74,7 @@ class CommandDispatcher extends CApplicationComponent
     }
 
     /**
-     * @param \yii1tech\async\cmd\CommandRunnerContract|array $commandRunner
+     * @param \yii1tech\async\cmd\CommandRunnerContract|array $commandRunner command runner component or its array configuration.
      * @return static self reference.
      */
     public function setCommandRunner($commandRunner): self

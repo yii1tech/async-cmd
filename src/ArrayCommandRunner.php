@@ -7,6 +7,25 @@ namespace yii1tech\async\cmd;
  *
  * This class can be useful in unit tests.
  *
+ * Application configuration example:
+ *
+ * ```php
+ * return [
+ *     'components' => [
+ *         \yii1tech\async\cmd\CommandDispatcher::class => [
+ *             'class' => \yii1tech\async\cmd\CommandDispatcher::class,
+ *             'commandRunner' => [
+ *                 'class' => \yii1tech\async\cmd\ArrayCommandRunner::class,
+ *             ],
+ *         ],
+ *         // ...
+ *     ],
+ *     // ...
+ * ];
+ * ```
+ *
+ * @property-read \yii1tech\async\cmd\Command|null $lastCommand the last command sent for execution.
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
@@ -37,6 +56,7 @@ class ArrayCommandRunner extends \CApplicationComponent implements CommandRunner
         }
 
         $commands = $this->commands;
+
         return array_pop($commands);
     }
 

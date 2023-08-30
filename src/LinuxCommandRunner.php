@@ -9,6 +9,25 @@ use Yii;
 /**
  * LinuxCommandRunner relies on Linux command line utility to run command without waiting its result.
  *
+ * Application configuration example:
+ *
+ * ```php
+ * return [
+ *     'components' => [
+ *         \yii1tech\async\cmd\CommandDispatcher::class => [
+ *             'class' => \yii1tech\async\cmd\CommandDispatcher::class,
+ *             'commandRunner' => [
+ *                 'class' => \yii1tech\async\cmd\LinuxCommandRunner::class,
+ *                 'phpBinPath' => '/usr/bin/php',
+ *                 'yiicPath' => '/path/to/project/yiic',
+ *             ],
+ *         ],
+ *         // ...
+ *     ],
+ *     // ...
+ * ];
+ * ```
+ *
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 1.0
  */
